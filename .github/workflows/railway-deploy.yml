@@ -1,0 +1,38 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_KEY }}
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "⚠️ RAILWAY_API_KEY secret not configured"
+            echo "To enable automatic Railway deployment:"
+            echo "1. Get your Railway API key from https://railway.app/account/tokens"
+            echo "2. Add it as RAILWAY_API_KEY secret in GitHub repository settings"
+            echo "3. Re-run this workflow"
+            exit 0
+          fi
+          
+          railway up --detach
+      
+      - name: Deployment status
+        run: |
+          echo "✅ Deployment initiated"
+          echo "Check Railway dashboard for deployment status"
