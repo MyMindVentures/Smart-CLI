@@ -2,6 +2,8 @@
 
 AI-Powered Command Generator & Executor - A fullstack PWA for generating and executing shell commands using AI, designed for no-coders and developers who want to simplify CLI interactions.
 
+> **📋 [Read the Problem Statement](./PROBLEM.md)** - Learn about the specific problems Smart CLI solves and why it exists.
+
 ## Features
 
 - 🧠 **AI Command Generation**: Generate shell commands from natural language prompts (MVP uses stub, ready for OpenAI integration)
@@ -279,6 +281,12 @@ const completion = await openai.chat.completions.create({
 
 const command = completion.choices[0].message.content.trim();
 ```
+
+## Documentation
+
+- **[PROBLEM.md](./PROBLEM.md)** - Detailed problem statement and user pain points this project addresses
+- **[PRD](./PRD)** - Complete Product Requirements Document with technical specifications (in Dutch)
+- **[README.md](./README.md)** - This file - setup, deployment, and usage instructions
 
 ## Contributing
 
