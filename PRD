@@ -1,0 +1,368 @@
+📄 Product Requirements Document (PRD)
+
+Project: AI Smart Shell Command Generator (PWA + API + Executor)
+
+Owner: Jij
+Doelgroep: No-coders / developers die CLI-complexiteit willen vermijden
+Doel: Vanuit één simpele web-app shell-commando’s laten genereren én uitvoeren (remote), zonder dat je zelf Docker, CLI, GitHub Actions, DevOps of IDE-setup moet aanraken.
+
+
+---
+
+1. Probleemomschrijving
+
+Je:
+
+bent no-coder / low-coder, maar wil toch projecten deployen
+
+worstelt al weken met configs, IDE’s, Dockerfiles, GitHub Actions, deploy settings
+
+hebt geen CLI-kennis en wilt het ook niet leren
+
+wil een betrouwbare, stabiele, simpele oplossing die gewoon werkt
+
+wil vanuit een PWA vanop eender welk device shell-commando’s
+
+genereren (met AI)
+
+uitvoeren (op jouw backend / container)
+
+
+wil alles draaien als 1 container op Railway
+
+wilt dat bestaande templates slim gecombineerd worden zodat jij zelf niets moet bouwen of configureren
+
+
+Kort: je wil een AI-powered smart command-line assistant die jou nooit meer met config-shit confronteert.
+
+
+---
+
+2. Doelstelling / Solution Overview
+
+Bouw een Fullstack AI Shell-Command Generator + Executor bestaande uit:
+
+1. Frontend (PWA) – Super eenvoudige UI om prompts te typen
+
+
+2. AI-Service – Genereert shell-commando's op basis van jouw prompt
+
+
+3. Command Executor Service – Voert de gegenereerde commando’s veilig uit op de server
+
+
+4. Audit Log + Output Viewer – Toont output en history
+
+
+5. Security Sandbox – Zorgt dat commando’s niet je hele server vernietigen
+
+
+6. Single-Container Deployment – Alles draait samen in 1 Railway Container
+
+
+
+De app wordt jouw persoonlijke AI-CLI, maar dan:
+
+visueel
+
+mobiel
+
+veilig
+
+zero-config
+
+no-code
+
+overal toegankelijk
+
+
+
+---
+
+3. Waarom nu? (Business Rationale)
+
+No-code/low-code developers hebben geen infrastructuurkennis maar willen toch automatiseren.
+
+ChatGPT geeft wel commands, maar je moet ze nog lokaal uitvoeren → jij wil dat dit remote en automatisch gebeurt.
+
+DevOps is een skillset die je niet wil leren → dus de app vervangt DevOps.
+
+
+Dit product vervangt:
+
+IDE’s
+
+GitHub Actions voor simpele taken
+
+lokaal terminalwerk
+
+configuratie-bugs
+
+foutgevoelige shell-interactie
+
+
+
+---
+
+4. Functionele Requirements (FR)
+
+4.1 Frontend (PWA)
+
+FR1: Gebruiker kan prompts ingeven
+
+FR2: App genereert AI-shell commands
+
+FR3: Gebruiker kan commando valideren of auto-run inschakelen
+
+FR4: Commando-output wordt in realtime getoond
+
+FR5: History van input + output
+
+FR6: App installeerbaar als PWA op mobiel/desktop
+
+FR7: Functie “Run again”
+
+FR8: UI zeer simpel → één tekstveld, één outputpaneel
+
+
+4.2 AI Service
+
+FR9: Neemt prompt aan en genereert een valid, safe, executable command
+
+FR10: Kan ook expliciete scripts genereren (bash, node, python, git, docker, etc.)
+
+FR11: Houdt rekening met sandbox restricties
+
+FR12: Past context toe (filesystem, vorige commands, environment)
+
+
+4.3 Executor
+
+FR13: Voert commando’s uit in een gecontroleerde sandbox
+
+FR14: Timeouts + resource limits
+
+FR15: Output in realtime streamen naar frontend
+
+FR16: Parallel execution moet geblokkeerd worden of gequeued
+
+FR17: Logging van alle uitvoeringen
+
+
+4.4 Security
+
+FR18: Verbiedt gevaarlijke commands zoals:
+rm -rf /, shutdown, killall, etc.
+
+FR19: Alle executions binnen een chroot-like directory
+
+FR20: Geen toegang tot Docker-daemon, host machine of sensitive paths
+
+
+4.5 Deployment
+
+FR21: Fullstack app draait in 1 Docker container
+
+FR22: Zero external dependencies behalve AI-API (OpenAI)
+
+FR23: Railway deploy → click-to-deploy via template
+
+FR24: .env auto-breed door Railway variables
+
+FR25: Geen extra config, geen CI/CD nodig
+
+
+
+---
+
+5. Niet-Functionele Requirements (NFR)
+
+NFR1 Ease-of-use
+
+Doel: Een no-coder moet dit binnen 5 minuten live krijgen.
+
+
+NFR2 Reliability
+
+Moet 24/7 runnen zonder manueel onderhoud.
+
+
+NFR3 Performance
+
+Command generation < 1 seconde
+
+Execution output streaming < 300ms latency
+
+
+NFR4 Scalability
+
+Niet kritisch — single user / small use. Railway scale plan voldoende.
+
+
+NFR5 Security
+
+Shell sandbox verplicht
+
+Mandatory command filtering
+
+API keys server-side only
+
+
+
+---
+
+6. Technische Architectuur
+
+Frontend
+
+Framework: SvelteKit, Next.js of React PWA template
+
+Features:
+
+PWA manifest
+
+Service worker
+
+Minimal UI
+
+
+
+Backend
+
+Node.js (Express/Fastify) of Python (FastAPI)
+
+Routes:
+
+/api/generate → AI call
+
+/api/execute → commando uitvoeren
+
+/api/logs → history ophalen
+
+
+
+AI
+
+OpenAI GPT-4.1 / 5.1 command-generation prompt
+
+
+Command Executor
+
+Node child_process / Python subprocess
+
+Docker sandbox pad zoals /sandbox
+
+Whitelist of blacklist systeem
+
+
+Container
+
+Single Dockerfile
+
+Startscript:
+
+backend starten
+
+frontend build + serve
+
+
+
+Deployment
+
+Railway > “Deploy from template”
+
+Variables:
+
+OPENAI_API_KEY
+
+NODE_ENV=production
+
+
+
+
+---
+
+7. User Flow
+
+1. Gebruiker opent PWA
+
+
+2. Typt prompt:
+“Genereer een Git command dat mijn repo reset naar origin/main”
+
+
+3. AI toont voorstel:
+git fetch origin && git reset --hard origin/main
+
+
+4. Gebruiker klikt “Run”
+
+
+5. Output verschijnt live
+
+
+6. History blijft lokaal en server-side beschikbaar
+
+
+7. Gebruiker kan alles opnieuw triggeren met 1 klik
+
+
+
+
+---
+
+8. Deliverables
+
+frontend/ PWA code
+
+backend/ API + executor service
+
+shared/ utils
+
+Dockerfile (één container)
+
+railway.json
+
+README met zero-config deploy instructions
+
+Command safety module
+
+AI prompt templates
+
+
+
+---
+
+9. Roadmap (MVP → v1.0 → v1.5)
+
+MVP
+
+PWA text input + output
+
+AI command generation
+
+Exec sandbox
+
+Railway single container
+
+
+v1.0
+
+Logging + history UI
+
+Auto-run toggle
+
+System prompts opslaan
+
+Authentication (simple password)
+
+
+v1.5
+
+File manager
+
+Script history
+
+Multi-step workflows (AI generated)
+
+Background tasks
