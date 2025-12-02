@@ -100,4 +100,4 @@ The solution is successful when:
 
 - [Product Requirements Document (PRD)](./PRD) - Detailed technical and functional requirements (in Dutch)
 - [README.md](./README.md) - Setup and deployment instructions
-- [Architecture Documentation](./README.md#architecture) - Technical implementation details
+- [Architecture Overview](./README.md#architecture) - Technology stack overview
